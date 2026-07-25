@@ -1,0 +1,774 @@
+/* Extracted from index.css lines 1-436 (Phase 2 mechanical split). */
+/* Owner: tokens+shell. Do not reorder relative to sibling imports. */
+/* Appearance: Apple-inspired HIG surfaces via data-theme only (no layout rewrite). */
+
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-color: #000000;
+  --bg-primary: var(--bg-color);
+  --panel-bg: #1c1c1e;
+  /* Alias used by filter dropdowns / cards — was referenced but never defined */
+  --card-bg: var(--panel-bg);
+  /* Surfaces for menus, inputs, secondary panels (stop hardcoded #1a1a1a fallbacks) */
+  --bg-secondary: #2c2c2e;
+  --bg-elevated: #2c2c2e;
+  --input-bg: #1c1c1e;
+  --menu-bg: #1c1c1e;
+  --hover-bg: rgba(255, 255, 255, 0.06);
+  --text-primary: #f5f5f7;
+  --text-secondary: #98989d;
+  --text-muted: var(--text-secondary);
+  --accent-color: #0a84ff;
+  --accent-hover: #409cff;
+  --success: #30d158;
+  --danger: #ff453a;
+  --border-color: rgba(255, 255, 255, 0.12);
+  /* Canonical Nova design tokens (ADR 006). Tailwind/shadcn map TO these. */
+  --nova-canvas: var(--bg-color);
+  --nova-panel: var(--panel-bg);
+  --nova-raised: #2c2c2e;
+  --nova-text: var(--text-primary);
+  --nova-text-muted: var(--text-secondary);
+  --nova-border: var(--border-color);
+  --nova-border-strong: rgba(255, 255, 255, 0.22);
+  --nova-accent: var(--accent-color);
+  --nova-success: var(--success);
+  --nova-danger: var(--danger);
+  --nova-bid: #30d158;
+  --nova-ask: #ff453a;
+  --radius-control: 8px;
+  --radius-panel: 12px;
+  --header-overlay: rgba(0, 0, 0, 0.55);
+  /* Legacy surface aliases — never use Tailwind --color-muted for text */
+  --color-surface: var(--nova-panel);
+  --color-surface-2: var(--nova-raised);
+  /* Scanner table text size — overridden by useScannerTableDensity (default Large). */
+  --scanner-table-fs: 1rem;
+  /* Slim scrollbars (Firefox + WebKit / Electron) */
+  --scrollbar-size: 8px;
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: rgba(152, 152, 157, 0.35);
+  --scrollbar-thumb-hover: rgba(152, 152, 157, 0.55);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --bg-color: #f5f5f7;
+  --bg-primary: var(--bg-color);
+  --panel-bg: #ffffff;
+  --card-bg: var(--panel-bg);
+  --bg-secondary: #e8e8ed;
+  --bg-elevated: #ffffff;
+  --input-bg: #ffffff;
+  --menu-bg: #ffffff;
+  --hover-bg: rgba(0, 0, 0, 0.04);
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-muted: var(--text-secondary);
+  --accent-color: #007aff;
+  --accent-hover: #0071e3;
+  --success: #34c759;
+  --danger: #ff3b30;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --nova-canvas: var(--bg-color);
+  --nova-panel: var(--panel-bg);
+  --nova-raised: #e8e8ed;
+  --nova-text: var(--text-primary);
+  --nova-text-muted: var(--text-secondary);
+  --nova-border: var(--border-color);
+  --nova-border-strong: rgba(0, 0, 0, 0.16);
+  --nova-accent: var(--accent-color);
+  --nova-success: var(--success);
+  --nova-danger: var(--danger);
+  --nova-bid: #34c759;
+  --nova-ask: #ff3b30;
+  --radius-control: 8px;
+  --radius-panel: 12px;
+  --header-overlay: rgba(245, 245, 247, 0.82);
+  --color-surface: var(--nova-panel);
+  --color-surface-2: var(--nova-raised);
+  --scanner-table-fs: 1rem;
+  --scrollbar-size: 8px;
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: rgba(110, 110, 115, 0.28);
+  --scrollbar-thumb-hover: rgba(110, 110, 115, 0.48);
+}
+
+/* Default before FOUC script / JS: dark */
+html:not([data-theme]) {
+  color-scheme: dark;
+}
+
+/*
+ * Native <select> popups on Windows Chromium often paint a light list while
+ * inheriting app text color — white-on-white in dark mode. Force solid
+ * theme surfaces on both the control and every <option>.
+ */
+select {
+  background-color: var(--input-bg, var(--panel-bg));
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-control, 8px);
+  color-scheme: inherit;
+}
+
+select option,
+select optgroup {
+  background-color: var(--menu-bg, var(--panel-bg));
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] select,
+[data-theme='dark'] select option,
+[data-theme='dark'] select optgroup,
+html:not([data-theme]) select,
+html:not([data-theme]) select option,
+html:not([data-theme]) select optgroup {
+  color-scheme: dark;
+  background-color: #1c1c1e;
+  color: #f5f5f7;
+}
+
+[data-theme='light'] select,
+[data-theme='light'] select option,
+[data-theme='light'] select optgroup {
+  color-scheme: light;
+  background-color: #ffffff;
+  color: #1d1d1f;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    'SF Pro Text',
+    'Segoe UI',
+    system-ui,
+    sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* App shell — must NOT be named .container (Tailwind v4 emits breakpoint
+   max-widths for that class name and leaves a dead strip on wide screens). */
+.nova-shell {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+}
+
+.main-col {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem;
+  overflow: hidden;
+  container-type: inline-size;
+  container-name: main-col;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-panel, 12px);
+  border: 1px solid var(--border-color);
+  background-color: var(--panel-bg);
+  background-image: none;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+[data-theme='light'] .app-header {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.app-header::before {
+  content: none;
+}
+
+.app-header > * {
+  position: relative;
+  z-index: 1;
+}
+
+.header-left,
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-shrink: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.header-status {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.header-meta-sep {
+  opacity: 0.45;
+  user-select: none;
+}
+
+.header-status-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.55rem;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.sample-data-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.sample-data-switch input {
+  margin: 0;
+  accent-color: var(--accent-color, #3b82f6);
+}
+
+.sample-data-switch--on {
+  border-color: color-mix(in srgb, var(--accent-color, #3b82f6) 55%, var(--border-color));
+  background: color-mix(in srgb, var(--accent-color, #3b82f6) 12%, transparent);
+  color: var(--text-color);
+}
+
+.sample-data-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.4rem 0.85rem;
+  border-bottom: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--accent-color, #3b82f6) 10%, transparent);
+  font-size: 0.78rem;
+  color: var(--text-color);
+}
+
+.header-actions .header-symbol-input {
+  width: 5.5rem;
+}
+
+.header-actions .history-select {
+  max-width: 8.5rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.header-actions .settings-btn {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+}
+
+.header-data-source {
+  white-space: nowrap;
+  opacity: 0.85;
+  font-size: 0.7rem;
+}
+
+.app-header--compact .header-status {
+  flex: 0 1 auto;
+  margin-left: auto;
+  justify-content: flex-end;
+}
+
+/* Narrow main column (wide side panel): status on its own row under brand+actions. */
+@container main-col (max-width: 900px) {
+  .app-header {
+    flex-wrap: wrap;
+    row-gap: 0.45rem;
+  }
+
+  .header-brand {
+    flex: 1 1 auto;
+  }
+
+  .header-status {
+    order: 3;
+    flex: 1 1 100%;
+  }
+
+  .header-actions {
+    margin-left: 0;
+  }
+
+  .status-indicator,
+  .status-cluster {
+    flex-wrap: wrap;
+    white-space: normal;
+    row-gap: 0.25rem;
+  }
+}
+
+/* ── Nova brand mark ──────────────────────────────────────────────────────── */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nova-logo {
+  flex-shrink: 0;
+  filter: none;
+  color: var(--accent-color);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  gap: 0.1rem;
+}
+
+.brand-wordmark {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--text-primary);
+  background: none;
+  -webkit-text-fill-color: unset;
+}
+
+.brand-tagline {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  color: var(--text-secondary);
+  opacity: 0.85;
+}
+
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.theme-toggle-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  background: var(--hover-bg);
+}
+
+.theme-toggle-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  display: block;
+}
+
+.mode-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-control, 8px);
+  border: 1px solid currentColor;
+}
+
+.mode-badge.mode-premarket {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.mode-badge.mode-market {
+  color: var(--success);
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.mode-badge.mode-closed {
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+  background: transparent;
+}
+
+.mode-badge.mode-loading {
+  color: var(--accent-color);
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+/* Labeled API / Gateway / Prices cluster (replaces bare "Connected"). */
+.status-cluster {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  min-width: 0;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--bg-elevated, var(--bg-secondary, transparent)) 80%, transparent);
+  white-space: nowrap;
+  cursor: help;
+  line-height: 1.2;
+}
+
+.status-chip__role {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted, var(--text-secondary));
+  opacity: 0.9;
+}
+
+.status-chip__value {
+  color: var(--text-primary, var(--text-secondary));
+  font-weight: 500;
+}
+
+.status-chip--ok {
+  border-color: color-mix(in srgb, var(--success, #10b981) 35%, var(--border-color));
+}
+
+.status-chip--ok .status-chip__value {
+  color: color-mix(in srgb, var(--success, #10b981) 85%, var(--text-primary));
+}
+
+.status-chip--bad {
+  border-color: color-mix(in srgb, var(--danger, #ef4444) 45%, var(--border-color));
+  background: color-mix(in srgb, var(--danger, #ef4444) 10%, transparent);
+}
+
+.status-chip--bad .status-chip__value {
+  color: color-mix(in srgb, var(--danger, #ef4444) 90%, var(--text-primary));
+}
+
+.status-chip--warn {
+  border-color: color-mix(in srgb, #eab308 45%, var(--border-color));
+  background: color-mix(in srgb, #eab308 10%, transparent);
+}
+
+.status-chip--warn .status-chip__value {
+  color: #ca8a04;
+}
+
+/* Live Gateway session — deliberately louder than paper "ok" green. */
+.status-chip--live {
+  border-color: color-mix(in srgb, #f97316 55%, var(--border-color));
+  background: color-mix(in srgb, #f97316 14%, transparent);
+}
+
+.status-chip--live .status-chip__value {
+  color: #ea580c;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.status-chip--action {
+  appearance: none;
+  cursor: pointer;
+  user-select: none;
+  font: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+}
+
+.status-chip--action:hover {
+  filter: brightness(1.08);
+}
+
+.status-chip--action:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.status-chip--busy {
+  opacity: 0.85;
+  cursor: progress;
+}
+
+.status-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted, var(--text-secondary));
+  opacity: 0.92;
+  max-width: min(42rem, 100%);
+}
+
+.status-hint--gateway {
+  max-width: min(28rem, 100%);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-secondary);
+}
+
+.status-hint--error {
+  color: color-mix(in srgb, var(--danger, #ef4444) 90%, var(--text-primary));
+  opacity: 1;
+}
+
+.backend-flag {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.35rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.55);
+  border: 1px solid rgba(248, 113, 113, 0.55);
+  white-space: nowrap;
+}
+
+.backend-flag--api_wedged {
+  color: #fef08a;
+  background: rgba(113, 63, 18, 0.55);
+  border-color: rgba(250, 204, 21, 0.55);
+}
+
+.backend-flag--api_down {
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.55);
+  border-color: rgba(248, 113, 113, 0.55);
+}
+
+.backend-flag--api_http {
+  color: #fdba74;
+  background: rgba(124, 45, 18, 0.5);
+  border-color: rgba(251, 146, 60, 0.55);
+}
+
+.backend-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.35rem;
+}
+
+.backend-start-btn {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 4px;
+  border: 1px solid rgba(239, 68, 68, 0.55);
+  background: rgba(239, 68, 68, 0.18);
+  color: var(--text-primary, #f3f4f6);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.backend-start-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.32);
+}
+
+.backend-start-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.backend-start-error {
+  font-size: 0.7rem;
+  color: var(--danger, #ef4444);
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dot.connected {
+  background-color: var(--success);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+.dot.disconnected {
+  background-color: var(--danger);
+}
+
+.dot.loading {
+  background-color: var(--accent-color);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+/* ── Data feed badge (header) ─────────────────────────────────────────────── */
+
+.feed-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  border: 1px solid;
+  margin-left: 0.15rem;
+}
+
+.feed-badge.feed-iex {
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.35);
+  background: rgba(96, 165, 250, 0.08);
+}
+
+.feed-badge.feed-sip {
+  color: #a78bfa;
+  border-color: rgba(167, 139, 250, 0.35);
+  background: rgba(167, 139, 250, 0.08);
+}
+
+.feed-fallback-hint {
+  font-size: 0.7rem;
+  color: #f59e0b;
+  cursor: help;
+  white-space: nowrap;
+}
+
+/* ── Feed select (settings panel) ─────────────────────────────────────────── */
+
+.feed-select {
+  background-color: var(--input-bg, var(--panel-bg));
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  transition: border-color 0.2s;
+  cursor: pointer;
+  width: 100%;
+}
+
+.feed-select option {
+  background-color: var(--menu-bg, var(--panel-bg));
+  color: var(--text-primary);
+}
+
+.feed-select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.form-hint {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  opacity: 0.7;
+  line-height: 1.3;
+}
+
+.settings-panel {
+  margin-bottom: 1.5rem;
+  max-width: 480px;
+}
+

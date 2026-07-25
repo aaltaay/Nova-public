@@ -1,0 +1,15 @@
+---
+description: Graphify knowledge graph (optional; not included in public portfolio tree)
+alwaysApply: false
+---
+
+# Graphify (optional)
+
+Graphify builds a navigable knowledge graph from markdown notes. The public portfolio export does **not** include `graphify-out/` or private vault content.
+
+If you maintain a full local clone with vault notes:
+
+- Rebuild after editing decision docs with the graphify skill under `.cursor/skills/graphify/`.
+- Query with `graphify query "<question>"` when `graphify-out/graph.json` exists locally.
+
+For architecture and decisions in this public tree, prefer [architecture/decisions/](../../architecture/decisions/) and [docs/](../../docs/).

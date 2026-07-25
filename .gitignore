@@ -1,0 +1,90 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+.env.local
+
+# Ephemeral agent scratch (screenshots, browser dumps — never commit)
+.tmp/
+
+# Local browser auth exports (cookies/localStorage) — never commit
+.local/
+
+# Scanner persistence cache (in-process snapshots, not for VCS)
+backend/.cache/
+
+# Runtime log files
+backend/logs/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/release/
+frontend/dist-electron/
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/
+frontend/playwright/.cache/
+
+# PyInstaller / desktop sidecar
+backend/dist/
+backend/build/
+backend/*.spec.bak
+
+# OS
+.DS_Store
+Thumbs.db
+.vercel
+
+# Local course handouts (large PDFs / videos — keep on disk, do not push)
+downloads/
+docs/warrior-trading/
+
+# Vale synced style packages (keep Vocab committed)
+.vale/styles/**
+!.vale/styles/Vocab/
+!.vale/styles/Vocab/**
+
+# Graphify extraction cache / scratch (keep graph.json, report, wiki, html in VCS)
+# Never write a second graph under the vault (CLI mis-target); canonical is repo-root graphify-out/
+knowledge/obsidian/graphify-out/
+
+# Dated accidental rebuilds under graphify-out/YYYY-MM-DD/ (canonical is graphify-out/ root)
+graphify-out/20*/
+
+graphify-out/cache/
+graphify-out/.graphify_chunk_*.json
+graphify-out/.graphify_ast.json
+graphify-out/.graphify_semantic*.json
+graphify-out/.graphify_extract.json
+graphify-out/.graphify_detect.json
+graphify-out/.graphify_analysis.json
+graphify-out/.graphify_cached.json
+graphify-out/.graphify_uncached.txt
+graphify-out/.needs_update
+graphify-out/*.bak
+
+# Mis-targeted graphify runs under backend/ or frontend/ (canonical is repo-root graphify-out/)
+backend/graphify-out/
+frontend/graphify-out/
+frontend/src/graphify-out/cache/
+frontend/src/graphify-out/.graphify_*
+frontend/src/graphify-out/.needs_update
+
+# pytest cache (local scratch, not for VCS)
+.pytest_cache/

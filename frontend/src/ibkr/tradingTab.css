@@ -1,0 +1,633 @@
+/* Extracted from index.css lines 5690-6168 (Phase 2 mechanical split). */
+/* Owner: features/ibkr. Do not reorder relative to sibling imports. */
+/* ── IBKR Trading Tab ──────────────────────────────────────────────────────── */
+
+.ibkr-trading-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.75rem;
+  height: 100%;
+}
+
+.ibkr-section-toggle {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.ibkr-section-toggle-btn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+}
+
+.ibkr-section-toggle-btn.active {
+  background: var(--row-bg-alt, rgba(255,255,255,0.06));
+  color: var(--text-primary, #fff);
+  border-color: var(--accent, #6366f1);
+}
+
+.ibkr-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.75rem;
+  background: var(--row-bg-alt, rgba(255,255,255,0.02));
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
+.ibkr-source-label {
+  font-size: 0.7rem;
+  color: var(--text-muted, #888);
+  margin-right: auto;
+}
+
+.ibkr-connection-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.ibkr-disconnected-guide {
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: var(--panel-bg, #161616);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  line-height: 1.65;
+}
+
+.ibkr-disconnected-guide h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.ibkr-disconnected-guide ol,
+.ibkr-disconnected-guide ul {
+  padding-left: 1.4rem;
+}
+
+.ibkr-disconnected-guide li {
+  margin-bottom: 0.4rem;
+}
+
+.ibkr-disconnected-guide code {
+  font-size: 0.82rem;
+  background: rgba(255,255,255,0.07);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+}
+
+.ibkr-trading-layout {
+  display: grid;
+  grid-template-columns: 240px 240px 1fr;
+  gap: 1rem;
+  align-items: start;
+  flex: 1;
+}
+
+/* Account header view — positions / orders / closed only (no L2 or ticket). */
+.ibkr-trading-layout--account-only {
+  grid-template-columns: 1fr;
+}
+
+.account-section-nav {
+  display: flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.account-section-tab {
+  appearance: none;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.account-section-tab:hover {
+  color: var(--text-primary, inherit);
+  border-color: color-mix(in srgb, var(--accent, #3b82f6) 45%, var(--border-color));
+}
+
+.account-section-tab.active {
+  color: var(--text-primary, inherit);
+  border-color: var(--accent, #3b82f6);
+  background: color-mix(in srgb, var(--accent, #3b82f6) 14%, transparent);
+}
+
+.account-reports-host {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+@media (max-width: 900px) {
+  .ibkr-trading-layout { grid-template-columns: 1fr; }
+}
+
+.ibkr-depth-col,
+.ibkr-order-col,
+.ibkr-account-col {
+  background: var(--panel-bg, #161616);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.ibkr-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary, #aaa);
+  margin: 0 0 0.5rem;
+}
+
+.ibkr-depth-symbol-row {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.ibkr-input {
+  background: var(--input-bg, rgba(255,255,255,0.05));
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary, #e0e0e0);
+  padding: 0.3rem 0.5rem;
+  font-size: 0.82rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.ibkr-input:focus { outline: none; border-color: var(--accent, #6366f1); }
+
+.ibkr-btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary, #e0e0e0);
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ibkr-btn-secondary:hover { border-color: var(--accent, #6366f1); }
+.ibkr-btn-secondary:disabled { opacity: 0.4; cursor: default; }
+
+/* Depth ladder */
+.ibkr-depth-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.ibkr-depth-table th {
+  color: var(--text-muted, #888);
+  font-weight: 600;
+  font-size: 0.65rem;
+  text-align: right;
+  padding: 0.15rem 0.3rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ibkr-depth-row td {
+  padding: 0.15rem 0.3rem;
+  text-align: right;
+}
+
+.ibkr-bid-price { color: var(--green, #22c55e); font-weight: 600; }
+.ibkr-ask-price { color: var(--red, #ef4444); font-weight: 600; }
+.ibkr-depth-size { color: var(--text-secondary, #bbb); }
+
+/* DAS L2 + empty/fallback chrome: ibkr/marketData.css (components layer).
+   Heuristic badges remain here (Trading tab feature). */
+.ibkr-heuristic-placeholder {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.ibkr-heuristic-idle {
+  background: rgba(148, 163, 184, 0.08);
+  color: #64748b;
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+.ibkr-heuristic-ask {
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+  border-color: rgba(239,68,68,0.3);
+}
+
+.ibkr-heuristic-bid {
+  background: rgba(34,197,94,0.1);
+  color: #22c55e;
+  border-color: rgba(34,197,94,0.3);
+}
+
+.ibkr-heuristic-spread {
+  background: rgba(148,163,184,0.12);
+  color: #94a3b8;
+  border-color: rgba(148,163,184,0.3);
+}
+
+/* Order ticket */
+.ibkr-order-ticket {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.ibkr-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ibkr-order-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary, #aaa);
+}
+
+.ibkr-mode-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+}
+
+.ibkr-mode-paper { background: rgba(34,197,94,0.12); color: #22c55e; }
+.ibkr-mode-live  { background: rgba(239,68,68,0.15); color: #ef4444; }
+.ibkr-mode-disconnected { background: rgba(255,255,255,0.05); color: #666; }
+
+.ibkr-order-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ibkr-order-row label {
+  font-size: 0.72rem;
+  color: var(--text-muted, #888);
+  width: 4rem;
+  flex-shrink: 0;
+}
+
+.ibkr-side-row { gap: 0.4rem; }
+
+.ibkr-side-btn {
+  flex: 1;
+  padding: 0.35rem 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary, #bbb);
+  cursor: pointer;
+}
+
+.ibkr-side-btn.active-buy  { background: rgba(34,197,94,0.15); color: #22c55e; border-color: #22c55e; }
+.ibkr-side-btn.active-sell { background: rgba(239,68,68,0.15); color: #ef4444; border-color: #ef4444; }
+.ibkr-side-btn.active-type { background: rgba(99,102,241,0.15); color: #818cf8; border-color: #818cf8; }
+.ibkr-side-btn:disabled { opacity: 0.4; cursor: default; }
+
+.ibkr-automate-btn {
+  margin-top: 0.2rem;
+  padding: 0.4rem 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px dashed rgba(99,102,241,0.4);
+  border-radius: 5px;
+  background: rgba(99,102,241,0.06);
+  color: #818cf8;
+  cursor: not-allowed;
+  width: 100%;
+  opacity: 0.75;
+}
+
+.ibkr-submit-btn {
+  margin-top: 0.3rem;
+  padding: 0.45rem 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.ibkr-submit-buy  { background: rgba(34,197,94,0.8); color: #fff; }
+.ibkr-submit-sell { background: rgba(239,68,68,0.8); color: #fff; }
+.ibkr-submit-btn:disabled { opacity: 0.4; cursor: default; }
+
+.ibkr-order-result {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+}
+
+.ibkr-order-result.ok  { background: rgba(34,197,94,0.1); color: #22c55e; }
+.ibkr-order-result.err { background: rgba(239,68,68,0.1); color: #ef4444; }
+
+/* Positions / account */
+.ibkr-account-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  font-size: 0.78rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ibkr-account-strip label {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--text-muted, #888);
+  margin-bottom: 0.1rem;
+}
+
+.ibkr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.ibkr-table th {
+  color: var(--text-muted, #888);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-align: right;
+  padding: 0.2rem 0.4rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ibkr-table th:first-child { text-align: left; }
+
+.ibkr-table td {
+  padding: 0.25rem 0.4rem;
+  text-align: right;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.ibkr-table td:first-child { text-align: left; }
+
+.ibkr-symbol { font-weight: 600; }
+
+.ibkr-empty {
+  font-size: 0.78rem;
+  color: var(--text-muted, #888);
+  padding: 0.5rem 0 0.75rem;
+}
+
+.ibkr-empty--error {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.ibkr-order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: flex-end;
+}
+
+.ibkr-table.ibkr-table--orders th.ibkr-col--actions,
+.ibkr-table.ibkr-table--orders td.ibkr-col--actions {
+  text-align: right;
+}
+
+.ibkr-cancel-btn,
+.ibkr-fill-now-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--text-secondary, #9ca3af);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.15rem 0.4rem;
+  white-space: nowrap;
+}
+
+.ibkr-cancel-btn:hover {
+  border-color: color-mix(in srgb, #ef4444 45%, transparent);
+  color: #ef4444;
+}
+
+.ibkr-fill-now-btn {
+  color: #f59e0b;
+}
+
+.ibkr-fill-now-btn:hover:not(:disabled) {
+  border-color: color-mix(in srgb, #f59e0b 50%, transparent);
+  color: #fbbf24;
+}
+
+.ibkr-fill-now-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ibkr-positions-panel { overflow-x: auto; }
+
+.ibkr-working-orders { margin-top: 0.25rem; }
+.ibkr-working-orders .ibkr-section-title,
+.ibkr-closed-orders .ibkr-section-title {
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--text, #e5e7eb);
+}
+
+.ibkr-working-orders--compact .ibkr-table { font-size: 0.82rem; }
+
+.ibkr-table--orders {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.ibkr-table--orders th,
+.ibkr-table--orders td {
+  padding: 0.4rem 0.45rem;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Click-to-sort affordance (drag still reorders after 6px move). */
+.ibkr-table--orders th.ibkr-col--data-sort {
+  user-select: none;
+}
+
+.ibkr-table--orders th.ibkr-col--data-sort:hover {
+  color: var(--text, #e5e7eb);
+}
+
+.ibkr-table--orders th.ibkr-col--sorted {
+  color: var(--accent, #3b82f6);
+}
+
+.ibkr-col-header__label {
+  margin-right: 0.2rem;
+}
+
+.ibkr-col-header__sort {
+  display: inline-block;
+  min-width: 0.85em;
+  color: var(--text-muted, #6b7280);
+  font-size: 0.72em;
+  font-weight: 700;
+  opacity: 0.45;
+  vertical-align: middle;
+}
+
+.ibkr-col-header__sort.is-active {
+  color: var(--accent, #3b82f6);
+  opacity: 1;
+}
+
+.ibkr-col-header__rank {
+  margin-left: 0.05em;
+  font-size: 0.85em;
+}
+
+.ibkr-table--orders th.ibkr-col--data-sort:hover .ibkr-col-header__sort:not(.is-active) {
+  opacity: 0.85;
+}
+
+.ibkr-table--orders th {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--text-secondary, #c4c9d2);
+}
+
+/* Keep header + cell alignment identical (beat .ibkr-table th:first-child). */
+.ibkr-table.ibkr-table--orders th.ibkr-col--text,
+.ibkr-table.ibkr-table--orders td.ibkr-col--text {
+  text-align: left;
+}
+
+.ibkr-table.ibkr-table--orders th.ibkr-col--num,
+.ibkr-table.ibkr-table--orders td.ibkr-col--num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ibkr-table.ibkr-table--orders th.ibkr-col--type,
+.ibkr-table.ibkr-table--orders td.ibkr-col--type,
+.ibkr-table.ibkr-table--orders th.ibkr-col--status,
+.ibkr-table.ibkr-table--orders td.ibkr-col--status {
+  text-align: center;
+}
+
+/* Buy/Sell encoded as color (no Side column) — shared by Open + Closed + Positions. */
+.ibkr-side--buy {
+  color: var(--green, #22c55e);
+  font-weight: 650;
+}
+
+.ibkr-side--sell {
+  color: var(--red, #ef4444);
+  font-weight: 650;
+}
+
+.ibkr-table--orders tr.ibkr-order-row--buy > td,
+.ibkr-positions-panel tr.ibkr-order-row--buy > td {
+  background: color-mix(in srgb, var(--green, #22c55e) 14%, transparent);
+}
+
+.ibkr-table--orders tr.ibkr-order-row--sell > td,
+.ibkr-positions-panel tr.ibkr-order-row--sell > td {
+  background: color-mix(in srgb, var(--red, #ef4444) 14%, transparent);
+}
+
+.ibkr-table--orders tr.ibkr-order-row--buy > td.ibkr-symbol,
+.ibkr-table--orders tr.ibkr-order-row--sell > td.ibkr-symbol,
+.ibkr-positions-panel tr.ibkr-order-row--buy > td.ibkr-symbol,
+.ibkr-positions-panel tr.ibkr-order-row--sell > td.ibkr-symbol {
+  border-left: 3px solid currentColor;
+  padding-left: 0.4rem;
+}
+
+/* Keep secondary time readable on tinted rows. */
+.ibkr-table--orders tr.ibkr-order-row--buy > td.ibkr-col--time,
+.ibkr-table--orders tr.ibkr-order-row--sell > td.ibkr-col--time {
+  color: var(--text-secondary, #9ca3af);
+}
+
+.ibkr-table.ibkr-table--orders th.ibkr-col--time,
+.ibkr-table.ibkr-table--orders td.ibkr-col--time {
+  text-align: left;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+  font-weight: 550;
+  color: var(--text, #d1d5db);
+}
+
+.ibkr-table--orders th.ibkr-col--sortable {
+  user-select: none;
+  touch-action: none;
+}
+
+.ibkr-table--orders th.ibkr-col--sortable:hover {
+  color: var(--text-primary, #f3f4f6);
+}
+
+.ibkr-table--orders th.ibkr-col--dragging {
+  z-index: 2;
+  background: color-mix(in srgb, var(--accent, #3b82f6) 18%, transparent);
+}
+
+.ibkr-table--orders .ibkr-order-type {
+  white-space: nowrap;
+}
+
+.ibkr-table--orders .ibkr-order-status {
+  display: inline-block;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.ibkr-order-status--working { color: var(--accent, #3b82f6); }
+.ibkr-order-status--pending { color: var(--text-secondary, #9ca3af); }
+.ibkr-order-status--partial { color: #f59e0b; }
+.ibkr-order-status--filled { color: var(--green, #22c55e); }
+.ibkr-order-status--cancelled,
+.ibkr-order-status--failed { color: var(--text-muted, #6b7280); }
+
+/* Just-placed pulse sits on top of buy/sell row tint. */
+.ibkr-order-row--highlight td {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #3b82f6) 55%, transparent);
+}
+

@@ -1,0 +1,33 @@
+---
+description: Rules for web verification and browser testing using local browser connection or agent-browser. Use when finishing tasks involving web deployments, frontend changes, or UI updates.
+alwaysApply: true
+---
+
+# Browser Testing & Web Verification Guidelines
+
+## 1. Web Verification Requirement
+
+At the end of every task involving web deployments or changes, you MUST open a headless/headed browser (using `agent-browser` or Playwright) and test the actual live URL or local dev server to ensure it loads successfully and functions correctly before declaring the task complete.
+
+For interactive React changes, a screenshot alone is not verification:
+
+1. Start a fresh browser session so old errors do not contaminate the result.
+2. Exercise the affected interaction, including rapid switching when async data is involved.
+3. Run `npx agent-browser@latest console` and confirm there are no new uncaught errors or React component-crash warnings.
+4. If a user reports a blank page, treat it as a code defect until the exact browser exception and component stack are captured. Do not attribute it to HMR/reload churn merely because it is intermittent.
+5. Components wrapping imperative third-party UI libraries (charts, maps, editors) must have a local error boundary so one library exception cannot unmount the whole application.
+6. For virtualized, paged, or incremental lists, verify against a populated production-scale dataset. Record mounted row count, total DOM node count, list viewport height, list scroll height, and document scroll height before and after scrolling. An empty-list screenshot or bounded CSS declaration is not proof that row mounting is bounded.
+
+## 2. Available Browser Skills
+
+- **Agent Browser CLI (`agent-browser`):** Used for fast, lightweight browser tasks.
+  - Commands:
+    - `npx agent-browser@latest open <url>`
+    - `npx agent-browser@latest snapshot` (Get DOM snapshot with `@eN` references)
+    - `npx agent-browser@latest click '@eN'`
+    - `npx agent-browser@latest fill '@eN' "text"`
+    - `npx agent-browser@latest screenshot --annotate ./page.png`
+- **Local Browser Connection (CDP):** For using the user's personal authenticated browser session instead of a fresh isolated instance.
+  - Chrome port: `9222`
+  - Edge port: `9223`
+  - **MANDATORY Security Protocol:** Before connecting to the local browser via Playwright/CDP, run your machine's local browser security prompt script (if configured) with `--browser [Chrome/Edge]`. Override the script path with `NOVA_LOCAL_BROWSER_SECURITY_SCRIPT`. Only proceed with the CDP connection if it prints `APPROVED`.

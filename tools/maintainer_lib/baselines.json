@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "description": "Committed fingerprints for legacy architecture findings. New findings of these kinds fail --fail-on-findings unless listed here.",
+  "fingerprints": []
+}

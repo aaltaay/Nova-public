@@ -1,0 +1,113 @@
+{
+  "name": "nova",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Nova — local stock scanner (web + Windows desktop)",
+  "author": "Altay Studio",
+  "type": "module",
+  "main": "electron/main.mjs",
+  "scripts": {
+    "dev": "vite",
+    "prebuild": "node scripts/check-railway-api-base.mjs",
+    "build": "tsc -b && vite build",
+    "postbuild": "node scripts/write-dist-api-config.mjs",
+    "build:electron-renderer": "cross-env NOVA_ELECTRON_BUILD=1 tsc -b && cross-env NOVA_ELECTRON_BUILD=1 vite build",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:orders-pyramid": "vitest run src/ibkr/orderQtyMath.test.ts src/ibkr/workingOrderCells.test.tsx src/ibkr/orderDisplay.test.ts src/ibkr/mockWorkingOrders.test.ts src/ibkr/fillWorkingOrderImmediately.test.ts src/ibkr/WorkingOrdersPanel.test.tsx src/closed_orders/closedOrderCells.test.tsx src/closed_orders/filterClosedOrders.test.ts src/closed_orders/mockClosedOrders.test.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:orders": "playwright test e2e/open-closed-orders.spec.ts",
+    "test:e2e:ui": "playwright test --ui",
+    "preview": "vite preview",
+    "electron:dev": "concurrently -k -n vite,electron -c cyan,magenta \"vite\" \"wait-on http://127.0.0.1:5173 && cross-env NOVA_VITE_URL=http://127.0.0.1:5173 electron .\"",
+    "build:api": "node scripts/build-api-sidecar.mjs",
+    "electron:pack": "npm run build:api && npm run build:electron-renderer && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win nsis --x64",
+    "electron:dir": "npm run build:api && npm run build:electron-renderer && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win dir --x64"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@radix-ui/react-alert-dialog": "^1.1.19",
+    "@radix-ui/react-slot": "^1.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tanstack/react-hotkeys": "^0.10.0",
+    "@tanstack/react-virtual": "^3.14.6",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "input-otp": "^1.4.2",
+    "lightweight-charts": "^5.1.0",
+    "lightweight-charts-drawing": "^0.1.1",
+    "lightweight-charts-indicators": "^0.4.2",
+    "lucide-react": "^1.24.0",
+    "oakscriptjs": "^0.3.0",
+    "radix-ui": "^1.6.2",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.61.1",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^9.2.1",
+    "cross-env": "^7.0.3",
+    "electron": "^37.2.0",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.4.0",
+    "jsdom": "^29.1.1",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.58.0",
+    "vite": "^8.0.4",
+    "vitest": "^4.1.10",
+    "wait-on": "^8.0.3"
+  },
+  "build": {
+    "appId": "com.altaystudio.nova",
+    "productName": "Nova",
+    "copyright": "Copyright © Altay Studio",
+    "directories": {
+      "output": "release",
+      "buildResources": "electron/build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../backend/dist/nova-api",
+        "to": "nova-api"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "Nova-Setup-${version}.${ext}",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Nova"
+    }
+  }
+}

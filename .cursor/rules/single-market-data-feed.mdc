@@ -1,0 +1,91 @@
+---
+description: Single market-data feed + quote-panel symbol gates — no silent cross-provider fallbacks or stale L2
+globs:
+  - backend/**/*.py
+  - frontend/src/**/*.{ts,tsx}
+alwaysApply: true
+---
+
+# Single market-data feed & quote-panel coherence
+
+Scanner discovery is **IBKR-only** (`NOVA_DISCOVERY_PROVIDER=ibkr`). Interactive Brokers is the **only** price/volume/depth/chart/scanner feed. Alpaca is news + listing metadata only — never a selectable scanner source. Do not silently mix Alpaca market data into quote, chart, scanner, or Level 2.
+
+## Hard rules
+
+1. **One discovery feed for prices.**
+   - Scanner rows, quote ticks, chart bars, Level 2, and Time & Sales come from IBKR.
+   - Settings must not offer Alpaca as a scanner source; `/api/config` coerces any stale `alpaca` value to `ibkr`.
+   - Never fall back from IBKR → Alpaca without an **explicit** user-visible error. Silent fallback is forbidden.
+
+2. **Alpaca listing metadata is not a price feed.**
+   Asset flags (tradable / shortable / margin) may still come from Alpaca Assets API. Label them as listing/metadata — never as the quote source. Do not imply Alpaca is pricing the panel.
+
+3. **Quote panel symbol gate (mandatory).**
+   When opening or switching the quote / side panel / Stock View:
+   - Clear prior ticker state immediately on symbol change (`detail`, Level 2 book, tape prints, chart series).
+   - Render quote body / Level 2 / T&S / live chart only when `detail.symbol === selectedSymbol` (or show loading / empty — never the previous symbol's surfaces).
+   - Depth and tape hooks must ignore WS messages whose `symbol` ≠ the hook's current symbol, and ignore events from a non-current WebSocket instance.
+   - Prefer binding Level 2 and T&S to `selectedSymbol` (with `key={symbol}`), not a stale `detail.symbol`.
+
+4. **Fail loud, not quiet.**
+   If IBKR bars/ticks/depth/tape are unavailable while discovery is ibkr, return/show a clear error (e.g. HTTP 503). Do not serve Alpaca candles under an IBKR quote.
+
+5. **Scanner tables vs open ticker (two tiers).**
+   - **Table / HOD hot path:** bounded persistent IBKR `reqMktData` Level-1 streams for (a) every row in the **active scanner tab** and (b) a **reserved HOD active pool** (capacity-bounded — see rule 8 for exactly what is in that pool). Never stream the whole discovery universe. Coalesce ticks into batched `/ws/scanner` `price_patch` messages.
+   - **Do not** use `reqTickersAsync` for the active-table freshness SLA — IB completes snapshots on `tickSnapshotEnd` ~11s later, so a 1Hz/4s-timeout loop is structurally impossible.
+   - **Cold / discovery only:** infrequent `reqTickersAsync` (timeout ≥12s) for new/cold symbols outside the streamed set; serialized so it cannot starve L1.
+   - **Open ticker:** dedicated `reqMktData` (shared owner with table/HOD when overlap) + Level 2 + tape + chart — as fast as IBKR delivers.
+   - **Honesty:** per-row source age + header stale when the active-tab subscription is incomplete or patches are late. Never hide lag behind a frozen green "updated" badge.
+
+6. **Session-owned persistent scanner rosters (ADR 008).** `backend/ibkr/scanner_stream.py` owns persistent `reqScannerSubscription` handles for the life of the process — it does not poll. Desired subscriptions by session period: Premarket = Gainers + Gappers; RTH = Gainers + Losers (UI-only); Afterhours = AH Gainers; Closed = none (at most two persistent slots). Each table (`gappers`/`gainers`/`losers`/`afterhours`) carries its own `session_key` (04:00 ET-anchored), `state` (`live`/`frozen`/`unavailable`), `revision`, `roster_ts`, and `frozen_at` in `runtime_state`:
+   - Gappers is `live` 04:00–09:30 ET, then `frozen` (immutable) for the rest of the session.
+   - Gainers is `live` 04:00–16:00 ET, then `frozen`.
+   - Afterhours is `live` 16:00–20:00 ET, then `frozen`.
+   - A `frozen` table's membership, rank, values, metadata, and timestamp cannot change — HOD-owned L1 may keep evaluating retained symbols without mutating the frozen row. Do not resubscribe L1 for a frozen tab's own display; only a `live` tab consumes active-tab L1.
+   - Every scanner/hydration callback must be fenced by IB READY generation + subscription epoch + table + session key before it can write state; a result from a superseded generation/epoch/session is discarded, not applied.
+
+7. **Time & Sales = IBKR only (open symbol).**
+   - Feed: `reqTickByTickData(AllLast)` via `backend/ibkr/tape_stream.py`.
+   - Scope: selected/open symbol only — same lifecycle as Level 2 (refcounted, 15s resubscribe guard).
+   - Transport: `/ws/ibkr/tape/{symbol}` with `msg.symbol` gates on every message.
+   - No Alpaca tape in the live UI. `backend/l2/tape.py` (Alpaca recorder) is for historical recording only.
+   - Clear tape immediately on symbol switch (never bleed prior symbol's prints into the new view).
+
+8. **HOD eligibility is the current-session displayed union — no side-channel scans.**
+   - Price/volume ticks into `hod_momo.on_trade_update` come from IBKR L1 streams (`ibkr/scanner_l1.py` / shared `ibkr/ticks.py`), not Alpaca WS.
+   - HOD Momo's active set is exactly: current-session Gappers ∪ Gainers ∪ Afterhours ∪ manually curated Former Momo. Nothing else — Losers, the open ticker, IBKR volume seeds (`HOT_BY_VOLUME`/`TOP_VOLUME_RATE`/`MOST_ACTIVE`), a second `belowPrice`-filtered Gainers pass, and rotating discovery "explore" are excluded from HOD admission (ADR 008).
+   - Sub-$20 stocks are ordinary Gainers rows — no special scanner, quota, or reserved slot.
+   - `websocket.alpaca_trades_drive_hod()` is False when discovery=ibkr — skip `on_trade_update` and `l2.tape.on_alpaca_trade` for Alpaca prints.
+   - `websocket.stream_loop` **does not open** Alpaca's market-data WebSocket under ibkr (idles and polls). Avoids dual-feed and Alpaca's one-connection limit.
+   - Depth/tape hooks must compare `msg.symbol` to an **uppercased** current symbol key.
+
+## Anti-patterns
+
+- ❌ Keeping previous `detail` while loading the next ticker so L2 stays on NXTC under an MVO quote
+- ❌ `chart_bars` catching IBKR errors and calling Alpaca when discovery=ibkr
+- ❌ UI copy that says "IBKR" while a silent Alpaca path still runs
+- ❌ Applying `trade_update` / book updates before the matching `initial` / `subscribed` for the current symbol
+- ❌ Nesting table reprice inside `_scan_loop` sleep (starves prices for 10–90s during movers scans)
+- ❌ Using `reqTickersAsync` / 4s timeouts for active-table freshness (IB `tickSnapshotEnd` ≈ 11s)
+- ❌ Streaming the whole discovery universe via `reqMktData`
+- ❌ Mutating a `frozen` table's membership/rank/values/timestamp after its session boundary
+- ❌ Applying a scanner/hydration callback from a superseded IB generation, subscription epoch, or session key
+- ❌ Reviving HOD volume seeds, a `belowPrice` Gainers pass, open-ticker priority, or Losers as HOD inputs
+- ❌ Pretending table prices are live when the active-tab L1 subscription is incomplete
+- ❌ Feeding T&S from the Alpaca recorder (`l2.tape`) instead of `tape_stream.py`
+- ❌ Showing prior symbol's prints in T&S after a symbol switch
+- ❌ Calling `_hod_momo.on_trade_update` from the Alpaca WS loop when discovery=ibkr
+- ❌ Opening Alpaca market-data WebSocket while discovery=ibkr (burns the one WS slot for nothing)
+
+## Related
+
+- `architecture/decisions/008-persistent-ibkr-scanner-rosters.md` — session-owned roster ADR
+- `backend/ibkr/scanner_stream.py` — persistent scanner subscriptions, freeze/rollover
+- `backend/chart_bars.py` — IBKR-only when discovery=ibkr
+- `backend/ibkr/scanner_l1.py` — active-tab + reserved HOD L1 streams → `/ws/scanner`
+- `backend/ibkr/ticks.py` — shared owner-aware `reqMktData` (detail / scanner / HOD)
+- `backend/ibkr/reprice.py` — detail backstop only (cold snapshots, not table SLA)
+- `backend/ibkr/tape_stream.py` — `reqTickByTickData AllLast` subscriber
+- `backend/scanner_push.py` — `/ws/scanner` + `set_active_tab`
+- `frontend/src/hooks/useTickerStream.ts`, `useIbkrDepth.ts`, `useIbkrTape.ts`, `useScannerPriceStream.ts`
+- `frontend/src/utils/dataSourceMap.ts` — honest attribution
